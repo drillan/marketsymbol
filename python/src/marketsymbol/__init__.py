@@ -16,6 +16,7 @@ Example:
     'XJPX:7203'
 """
 
+from marketsymbol.adapter import AdapterRegistry, BaseAdapter
 from marketsymbol.enums import AssetClass, OptionType
 from marketsymbol.errors import (
     ErrorCode,
@@ -32,7 +33,9 @@ from marketsymbol.symbol import (
 )
 
 __all__ = [
+    "AdapterRegistry",
     "AssetClass",
+    "BaseAdapter",
     "EquitySymbol",
     "ErrorCode",
     "FutureSymbol",
