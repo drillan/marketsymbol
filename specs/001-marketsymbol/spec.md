@@ -159,11 +159,6 @@ marketsymbolをmarketschemaライブラリと連携させ、Instrumentモデル�
 - **FR-023**: システムは登録済みアダプター一覧を取得できること
 - **FR-024**: アダプターはサポートする資産クラスを宣言できること
 
-#### derivatives-reaper互換機能
-
-- **FR-025**: システムは derivatives-reaper 形式（`YYYYMM`, `YYYYMM-W`）の限月を marketsymbol 形式（`YYYYMMDD`）に変換できること
-- **FR-026**: システムは marketsymbol 形式（`YYYYMMDD`）の月次限月を derivatives-reaper 形式（`YYYYMM`）に変換できること
-
 ### Key Entities
 
 - **Symbol（シンボル）**: 金融商品を一意に識別する文字列。取引所コード、商品/証券コード、限月、オプション種別、権利行使価格の要素で構成される

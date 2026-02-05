@@ -105,5 +105,10 @@ uv --directory ./python run pytest            # テスト
 TDD サイクル（Red → Green → Refactor）に従う。シンボルパーサー、バリデーション、正規化関数、アダプター基盤は TDD 必須。
 
 ## Active Technologies
+- Python 3.13+ + 標準ライブラリのみ（外部依存なし） (002-marketsymbol-python)
+- N/A（インメモリ処理のみ） (002-marketsymbol-python)
 
 - Python 3.13, Rust (latest stable)
+
+## Recent Changes
+- 002-marketsymbol-python: Added Python 3.13+ + 標準ライブラリのみ（外部依存なし）
