@@ -41,9 +41,21 @@ class TestErrorCode:
         """E007: 不明な取引所コード."""
         assert ErrorCode.UNKNOWN_EXCHANGE.value == "E007"
 
+    def test_invalid_code(self) -> None:
+        """E008: 無効な証券/商品コード."""
+        assert ErrorCode.INVALID_CODE.value == "E008"
+
+    def test_invalid_strike_value(self) -> None:
+        """E009: 無効な権利行使価格."""
+        assert ErrorCode.INVALID_STRIKE_VALUE.value == "E009"
+
+    def test_symbol_too_long(self) -> None:
+        """E010: シンボル文字列が長すぎる."""
+        assert ErrorCode.SYMBOL_TOO_LONG.value == "E010"
+
     def test_member_count(self) -> None:
-        """ErrorCode は 7 つのメンバーを持つ (E001-E007)."""
-        assert len(ErrorCode) == 7
+        """ErrorCode は 10 のメンバーを持つ (E001-E010)."""
+        assert len(ErrorCode) == 10
 
 
 class TestSymbolError:
