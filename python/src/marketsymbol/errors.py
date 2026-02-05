@@ -33,7 +33,7 @@ class ErrorCode(Enum):
     """無効なオプション種別."""
 
     UNKNOWN_EXCHANGE = "E007"
-    """不明な取引所コード."""
+    """無効な取引所コード形式."""
 
     INVALID_CODE = "E008"
     """無効な証券/商品コード."""

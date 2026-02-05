@@ -10,6 +10,7 @@ ADR はプロジェクト開発中に行われた重要なアーキテクチャ�
 :maxdepth: 2
 
 symbol/001-symbol-specification
+symbol/002-weekly-expiry-format
 ```
 
 ## ADR フォーマット
