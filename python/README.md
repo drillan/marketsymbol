@@ -98,7 +98,7 @@ except SymbolParseError as e:
     print(f"Message: {e}")                      # [E004] ...
 
 try:
-    symbol = parse_symbol("XXXX:7203")  # 不明な取引所
+    symbol = parse_symbol("XX:7203")  # 無効な取引所形式 (4文字でない)
 except SymbolParseError as e:
     print(f"Error code: {e.error_code.value}")  # E007
 ```
@@ -224,7 +224,7 @@ assert symbol == restored
 | E004 | 無効なセグメント数 |
 | E005 | 無効な日付 |
 | E006 | 無効なオプション種別 |
-| E007 | 不明な取引所コード |
+| E007 | 無効な取引所コード形式 |
 | E008 | 無効な証券/商品コード |
 | E009 | 無効な権利行使価格 |
 | E010 | シンボル文字列が長すぎる |
