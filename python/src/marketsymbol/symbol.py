@@ -49,7 +49,7 @@ class FutureSymbol:
 
     Attributes:
         exchange: ISO 10383 MIC コード (4文字英大文字).
-        code: 商品コード (2-6文字英数字).
+        code: 商品コード (1-10文字英数字).
         expiry: 限月 (YYYYMMDD 形式).
     """
 
@@ -79,7 +79,7 @@ class OptionSymbol:
 
     Attributes:
         exchange: ISO 10383 MIC コード (4文字英大文字).
-        code: 商品コード (2-10文字英数字).
+        code: 商品コード (1-10文字英数字).
         expiry: 限月 (YYYYMMDD 形式).
         option_type: オプション種別 (CALL/PUT/SERIES).
         strike: 権利行使価格 (CALL/PUT は正の整数必須、SERIES は None).
