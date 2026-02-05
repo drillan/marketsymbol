@@ -104,6 +104,27 @@ class TestSymbolParseError:
         error = SymbolParseError("Parse failed", ErrorCode.INVALID_SEGMENT_COUNT)
         assert error.error_code == ErrorCode.INVALID_SEGMENT_COUNT
 
+    def test_exception_chaining(self) -> None:
+        """例外チェーン (__cause__) が正しく設定される."""
+        original = ValueError("original error")
+        try:
+            raise SymbolParseError(
+                "Parse failed", ErrorCode.INVALID_SEGMENT_COUNT
+            ) from original
+        except SymbolParseError as e:
+            assert e.__cause__ is original
+
+    def test_from_parse_failure_factory(self) -> None:
+        """from_parse_failure ファクトリメソッドで raw_symbol が必須になる."""
+        error = SymbolParseError.from_parse_failure(
+            "Parse failed",
+            ErrorCode.INVALID_SEGMENT_COUNT,
+            "INVALID:SYMBOL",
+        )
+        assert error.message == "Parse failed"
+        assert error.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert error.raw_symbol == "INVALID:SYMBOL"
+
 
 class TestSymbolValidationError:
     """SymbolValidationError のテスト."""

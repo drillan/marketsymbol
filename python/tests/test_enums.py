@@ -29,6 +29,23 @@ class TestAssetClass:
         members = [AssetClass.EQUITY, AssetClass.FUTURE, AssetClass.OPTION]
         assert len(members) == 3
 
+    def test_from_value_equity(self) -> None:
+        """値 'equity' から AssetClass.EQUITY を取得できる."""
+        assert AssetClass("equity") == AssetClass.EQUITY
+
+    def test_from_value_future(self) -> None:
+        """値 'future' から AssetClass.FUTURE を取得できる."""
+        assert AssetClass("future") == AssetClass.FUTURE
+
+    def test_from_value_option(self) -> None:
+        """値 'option' から AssetClass.OPTION を取得できる."""
+        assert AssetClass("option") == AssetClass.OPTION
+
+    def test_invalid_value_raises(self) -> None:
+        """無効な値で ValueError が発生する."""
+        with pytest.raises(ValueError):
+            AssetClass("invalid")
+
 
 class TestOptionType:
     """OptionType 列挙型のテスト."""
