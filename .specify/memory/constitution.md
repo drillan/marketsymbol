@@ -1,10 +1,10 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.0.1 → 1.0.2
+Version Change: 1.0.2 → 1.0.3
 
 Modified Principles:
-- Scope Definition: 限月フォーマットを spec.md と整合（週次限月の説明追加）
+- Scope Definition: 限月フォーマットを ADR-002 と整合（全て YYYYMMDD 形式に統一）
 
 Added Sections:
 - なし
@@ -99,7 +99,7 @@ marketsymbol は完全に独立して動作する。外部プロジェクト（m
 | パース・バリデーション | シンボル文字列の解析と検証 |
 | 正規化 | 大文字変換、全角→半角変換、空白除去 |
 | アダプター基盤 | BaseAdapter、AdapterRegistry |
-| 限月フォーマット | 月次(`YYYYMM`)、週次(`YYYYMM-W`、Wは1-5)、日次(`YYYYMMDD`) |
+| 限月フォーマット | 全て `YYYYMMDD`（8桁）形式に統一（ADR-002で決定） |
 | 対象市場 | 日本市場(XJPX)、米国市場(XNYS等)、ISO 10383準拠の全取引所 |
 
 ### Out of Scope
@@ -346,4 +346,4 @@ def validate_exchange(code: str) -> bool:
 - 複雑さを追加する場合は正当化が必要
 - 原則に違反する場合は、明示的な例外として文書化する
 
-**Version**: 1.0.2 | **Ratified**: 2026-02-05 | **Last Amended**: 2026-02-05
+**Version**: 1.0.3 | **Ratified**: 2026-02-05 | **Last Amended**: 2026-02-05

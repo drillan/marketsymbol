@@ -1,7 +1,7 @@
 [project]
 name = "marketsymbol"
 version = "0.0.1"
-description = "Add your description here"
+description = "Unified market symbol format and vendor adapter for financial instruments"
 readme = "README.md"
 authors = [
     { name = "driller", email = "eleshis@gmail.com" }
