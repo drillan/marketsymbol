@@ -42,6 +42,9 @@ addopts = [
 filterwarnings = [
     "error",  # 警告をエラーとして扱い、早期に問題を検出
 ]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 
 # mypy configuration (strict mode)
 [tool.mypy]
