@@ -1,7 +1,4 @@
-"""BaseAdapter と AdapterRegistry のテスト.
-
-TDD Red フェーズ: adapter.py 実装前のテストファイル作成。
-"""
+"""BaseAdapter と AdapterRegistry のテスト."""
 
 from __future__ import annotations
 
@@ -187,6 +184,103 @@ class TestBaseAdapter:
         assert AssetClass.FUTURE in asset_classes
         assert AssetClass.OPTION not in asset_classes
 
+    def test_to_symbol_raises_valueerror_for_invalid_format(self) -> None:
+        """無効な形式のベンダーシンボルで ValueError が発生することを確認."""
+        from marketsymbol.adapter import BaseAdapter
+
+        class StrictAdapter(BaseAdapter):
+            @property
+            def supported_asset_classes(self) -> frozenset[AssetClass]:
+                return frozenset({AssetClass.EQUITY})
+
+            def to_symbol(
+                self, vendor_symbol: str
+            ) -> EquitySymbol | FutureSymbol | OptionSymbol:
+                if "." not in vendor_symbol:
+                    msg = f"Invalid format: {vendor_symbol}"
+                    raise ValueError(msg)
+                code, suffix = vendor_symbol.split(".", 1)
+                if suffix != "T":
+                    msg = f"Unknown suffix: {suffix}"
+                    raise ValueError(msg)
+                return EquitySymbol(exchange="XJPX", code=code)
+
+            def from_symbol(
+                self, symbol: EquitySymbol | FutureSymbol | OptionSymbol
+            ) -> str:
+                return f"{symbol.code}.T"
+
+        adapter = StrictAdapter()
+
+        with pytest.raises(ValueError, match="Invalid format"):
+            adapter.to_symbol("INVALID")
+
+        with pytest.raises(ValueError, match="Unknown suffix"):
+            adapter.to_symbol("7203.X")
+
+    def test_from_symbol_raises_typeerror_for_unsupported_asset_class(self) -> None:
+        """サポートしていない資産クラスで TypeError が発生することを確認."""
+        from marketsymbol.adapter import BaseAdapter
+
+        class EquityOnlyAdapter(BaseAdapter):
+            @property
+            def supported_asset_classes(self) -> frozenset[AssetClass]:
+                return frozenset({AssetClass.EQUITY})
+
+            def to_symbol(
+                self, vendor_symbol: str
+            ) -> EquitySymbol | FutureSymbol | OptionSymbol:
+                code, _ = vendor_symbol.split(".")
+                return EquitySymbol(exchange="XJPX", code=code)
+
+            def from_symbol(
+                self, symbol: EquitySymbol | FutureSymbol | OptionSymbol
+            ) -> str:
+                if not isinstance(symbol, EquitySymbol):
+                    msg = "Unsupported asset class"
+                    raise TypeError(msg)
+                return f"{symbol.code}.T"
+
+        adapter = EquityOnlyAdapter()
+        future_symbol = FutureSymbol(exchange="XJPX", code="NK", expiry="20250314")
+
+        with pytest.raises(TypeError, match="Unsupported asset class"):
+            adapter.from_symbol(future_symbol)
+
+    def test_roundtrip_conversion(self) -> None:
+        """to_symbol と from_symbol の変換が可逆であることを確認."""
+        from marketsymbol.adapter import BaseAdapter
+
+        class RoundtripAdapter(BaseAdapter):
+            @property
+            def supported_asset_classes(self) -> frozenset[AssetClass]:
+                return frozenset({AssetClass.EQUITY})
+
+            def to_symbol(
+                self, vendor_symbol: str
+            ) -> EquitySymbol | FutureSymbol | OptionSymbol:
+                code, _ = vendor_symbol.split(".")
+                return EquitySymbol(exchange="XJPX", code=code)
+
+            def from_symbol(
+                self, symbol: EquitySymbol | FutureSymbol | OptionSymbol
+            ) -> str:
+                return f"{symbol.code}.T"
+
+        adapter = RoundtripAdapter()
+        original_vendor_symbol = "7203.T"
+
+        # vendor -> symbol -> vendor
+        symbol = adapter.to_symbol(original_vendor_symbol)
+        result = adapter.from_symbol(symbol)
+        assert result == original_vendor_symbol
+
+        # symbol -> vendor -> symbol
+        original_symbol = EquitySymbol(exchange="XJPX", code="9984")
+        vendor = adapter.from_symbol(original_symbol)
+        result_symbol = adapter.to_symbol(vendor)
+        assert result_symbol == original_symbol
+
 
 class TestAdapterRegistry:
     """AdapterRegistry のテスト."""
@@ -272,6 +366,46 @@ class TestAdapterRegistry:
 
         with pytest.raises(ValueError, match="already registered"):
             registry.register("test", adapter2)
+
+    def test_register_empty_vendor_name_raises_error(self) -> None:
+        """空のベンダー名での登録はエラーになることを確認."""
+        from marketsymbol.adapter import AdapterRegistry
+
+        registry = AdapterRegistry()
+        adapter = self._create_test_adapter()
+
+        with pytest.raises(ValueError, match="empty"):
+            registry.register("", adapter)
+
+    def test_register_whitespace_vendor_name_raises_error(self) -> None:
+        """空白のみのベンダー名での登録はエラーになることを確認."""
+        from marketsymbol.adapter import AdapterRegistry
+
+        registry = AdapterRegistry()
+        adapter = self._create_test_adapter()
+
+        with pytest.raises(ValueError, match="empty"):
+            registry.register("   ", adapter)
+
+    def test_get_or_raise_returns_adapter(self) -> None:
+        """get_or_raise が登録済みアダプターを返すことを確認."""
+        from marketsymbol.adapter import AdapterRegistry
+
+        registry = AdapterRegistry()
+        adapter = self._create_test_adapter()
+        registry.register("test", adapter)
+
+        result = registry.get_or_raise("test")
+        assert result is adapter
+
+    def test_get_or_raise_raises_keyerror_for_unknown_vendor(self) -> None:
+        """get_or_raise が未登録ベンダーで KeyError を発生させることを確認."""
+        from marketsymbol.adapter import AdapterRegistry
+
+        registry = AdapterRegistry()
+
+        with pytest.raises(KeyError, match="unknown"):
+            registry.get_or_raise("unknown")
 
     def test_acceptance_criteria(self) -> None:
         """Issue #9 の受入条件を満たすことを確認."""

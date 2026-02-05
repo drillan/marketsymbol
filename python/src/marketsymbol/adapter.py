@@ -71,7 +71,8 @@ class BaseAdapter(ABC):
 
         Raises:
             ValueError: 変換できないシンボルの場合
-            TypeError: サポートしていない資産クラスの場合
+            TypeError: シンボルの資産クラスが supported_asset_classes に
+                含まれない場合
         """
         ...
 
@@ -93,9 +94,22 @@ class AdapterRegistry:
     書き込み操作のみロックを取得する。
 
     Example:
+        >>> from marketsymbol.adapter import AdapterRegistry, BaseAdapter
+        >>> from marketsymbol import EquitySymbol, AssetClass
+        >>>
+        >>> class MyAdapter(BaseAdapter):
+        ...     @property
+        ...     def supported_asset_classes(self):
+        ...         return frozenset({AssetClass.EQUITY})
+        ...     def to_symbol(self, vendor_symbol):
+        ...         code, _ = vendor_symbol.split(".")
+        ...         return EquitySymbol(exchange="XJPX", code=code)
+        ...     def from_symbol(self, symbol):
+        ...         return f"{symbol.code}.T"
+        >>>
         >>> registry = AdapterRegistry()
-        >>> registry.register("vendor_a", my_adapter)
-        >>> adapter = registry.get("vendor_a")
+        >>> registry.register("my", MyAdapter())
+        >>> adapter = registry.get("my")
         >>> vendors = registry.list()
     """
 
@@ -112,8 +126,12 @@ class AdapterRegistry:
             adapter: 登録するアダプターインスタンス
 
         Raises:
-            ValueError: 同じベンダー名が既に登録されている場合
+            ValueError: ベンダー名が空または空白のみ、
+                または同じベンダー名が既に登録されている場合
         """
+        if not vendor or not vendor.strip():
+            msg = "Vendor name cannot be empty or whitespace"
+            raise ValueError(msg)
         with self._lock:
             if vendor in self._adapters:
                 msg = f"Adapter for '{vendor}' already registered"
@@ -142,3 +160,23 @@ class AdapterRegistry:
             登録されているベンダー名のリスト
         """
         return list(self._adapters.keys())
+
+    def get_or_raise(self, vendor: str) -> BaseAdapter:
+        """アダプターを取得 (未登録時はエラー).
+
+        ロックフリーで高速に取得できる。
+
+        Args:
+            vendor: ベンダー識別名
+
+        Returns:
+            登録されているアダプター
+
+        Raises:
+            KeyError: ベンダーが未登録の場合
+        """
+        adapter = self._adapters.get(vendor)
+        if adapter is None:
+            msg = f"No adapter registered for '{vendor}'"
+            raise KeyError(msg)
+        return adapter
