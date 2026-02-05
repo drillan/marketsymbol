@@ -3,6 +3,12 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import sys
+from pathlib import Path
+
+# autodoc: Python モジュールのパスを追加
+sys.path.insert(0, str(Path(__file__).parent.parent / "python" / "src"))
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -16,7 +22,18 @@ author = "driller"
 extensions = [
     "myst_parser",
     "sphinxcontrib.mermaid",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
 ]
+
+# -- autodoc configuration ---------------------------------------------------
+autodoc_default_options = {
+    "members": True,
+    "member-order": "bysource",
+    "show-inheritance": True,
+}
+autodoc_typehints = "description"
 
 # MyST configuration
 myst_enable_extensions = [
