@@ -210,12 +210,12 @@ uv --directory ./python run mypy --strict src/marketsymbol
 
 ### パフォーマンス検証
 
-- [ ] T036 [P] test_performance.py を作成（parse_symbol が 1ms 以内で完了することを検証、SC-PY-007 対応） in python/tests/test_performance.py
+- [ ] T034 [P] test_performance.py を作成（parse_symbol が 1ms 以内で完了することを検証、SC-PY-007 対応） in python/tests/test_performance.py
 
 ### ドキュメント
 
-- [ ] T034 [P] python/README.md を作成（quickstart.md を参考にクイックスタートガイド）
-- [ ] T035 [P] docstring を追加（全公開 API に Google スタイル docstring）
+- [ ] T035 [P] python/README.md を作成（quickstart.md を参考にクイックスタートガイド）
+- [ ] T036 [P] docstring を追加（全公開 API に Google スタイル docstring）
 
 ---
 

@@ -89,9 +89,9 @@ except SymbolParseError as e:
 
 try:
     symbol = parse_symbol("XXXX:7203")  # 不明な取引所
-except SymbolValidationError as e:
+except SymbolParseError as e:
     print(f"エラーコード: {e.error_code.value}")  # E007
-    print(f"フィールド: {e.field_name}")          # exchange
+    print(f"メッセージ: {e}")                    # [E007] ...
 ```
 
 ### パターンマッチング
@@ -108,6 +108,26 @@ match symbol:
         print(f"先物: {exchange}:{code} 限月{expiry}")
     case OptionSymbol(exchange, code, expiry, option_type, strike):
         print(f"オプション: {exchange}:{code}")
+```
+
+### パターンマッチングの網羅性チェック
+
+```python
+from typing import assert_never
+from marketsymbol import Symbol, parse_symbol, EquitySymbol, FutureSymbol, OptionSymbol
+
+def describe_symbol(symbol: Symbol) -> str:
+    """mypy が全ケースを網羅していることを検証"""
+    match symbol:
+        case EquitySymbol(exchange, code):
+            return f"Equity: {exchange}:{code}"
+        case FutureSymbol(exchange, code, expiry):
+            return f"Future: {exchange}:{code}:{expiry}:F"
+        case OptionSymbol(exchange, code, expiry, option_type, strike):
+            return f"Option: {exchange}:{code}:{expiry}:{option_type.value}"
+        case _ as unreachable:
+            # 新しい Symbol 型が追加されたら mypy がここでエラーを報告
+            assert_never(unreachable)
 ```
 
 ## アダプターの実装

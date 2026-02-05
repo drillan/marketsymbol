@@ -87,13 +87,15 @@ class AdapterRegistry:
 **エラーコード体系（仕様より）**:
 | コード | 説明 | 例外クラス |
 |--------|------|-----------|
-| E001 | 先物に権利行使価格を指定 | SymbolValidationError |
-| E002 | オプション（C/P）に権利行使価格なし | SymbolValidationError |
+| E001 | 先物に権利行使価格を指定 | SymbolParseError |
+| E002 | オプション（C/P）に権利行使価格なし | SymbolParseError |
 | E003 | 無効な限月形式 | SymbolParseError |
 | E004 | 無効なセグメント数 | SymbolParseError |
-| E005 | 無効な日付 | SymbolValidationError |
+| E005 | 無効な日付 | SymbolParseError |
 | E006 | 無効なオプション種別 | SymbolParseError |
-| E007 | 不明な取引所コード | SymbolValidationError |
+| E007 | 不明な取引所コード | SymbolParseError |
+
+**注**: `parse_symbol()` で発生するエラーは全て `SymbolParseError`。`SymbolValidationError` はシンボルオブジェクト直接生成時（`EquitySymbol()` 等）のバリデーション失敗に使用。
 
 **Code pattern**:
 ```python

@@ -25,7 +25,8 @@ Python 開発者が `marketsymbol` パッケージをインポートし、シン
 1. **Given** インストール済みの `marketsymbol` パッケージ, **When** `parse_symbol("XJPX:7203")` を実行, **Then** `exchange="XJPX"`, `code="7203"`, `asset_class=AssetClass.EQUITY` を持つオブジェクトが返される
 2. **Given** インストール済みの `marketsymbol` パッケージ, **When** `parse_symbol("XJPX:NK:20250314:F")` を実行, **Then** `exchange="XJPX"`, `code="NK"`, `expiry="20250314"`, `asset_class=AssetClass.FUTURE` を持つオブジェクトが返される
 3. **Given** インストール済みの `marketsymbol` パッケージ, **When** `parse_symbol("XJPX:N225O:20250314:C:42000")` を実行, **Then** `exchange="XJPX"`, `code="N225O"`, `expiry="20250314"`, `option_type=OptionType.CALL`, `strike=42000`, `asset_class=AssetClass.OPTION` を持つオブジェクトが返される
-4. **Given** パース結果のシンボルオブジェクト, **When** `str()` で文字列に変換, **Then** 元のシンボル文字列と同一の正規化された文字列が返される
+4. **Given** インストール済みの `marketsymbol` パッケージ, **When** `parse_symbol("XJPX:N225O:20250314:O")` を実行（シリーズ識別用）, **Then** `exchange="XJPX"`, `code="N225O"`, `expiry="20250314"`, `option_type=OptionType.SERIES`, `strike=None`, `asset_class=AssetClass.OPTION` を持つオブジェクトが返される
+5. **Given** パース結果のシンボルオブジェクト, **When** `str()` で文字列に変換, **Then** 元のシンボル文字列と同一の正規化された文字列が返される
 
 ---
 
@@ -94,7 +95,7 @@ Python 開発者が `BaseAdapter` クラスを継承してカスタムアダプ�
 1. **Given** `BaseAdapter` を継承したカスタムアダプター, **When** `registry.register("vendor_a", adapter)` を実行, **Then** アダプターが登録され、`registry.get("vendor_a")` で取得可能
 2. **Given** 登録済みのベンダーAアダプター, **When** `adapter.to_symbol("7203.T")` を実行, **Then** 統一シンボル `EquitySymbol(exchange="XJPX", code="7203")` が返される
 3. **Given** 登録済みのベンダーAアダプター, **When** `adapter.from_symbol(EquitySymbol(exchange="XJPX", code="7203"))` を実行, **Then** ベンダー固有形式 `"7203.T"` が返される
-4. **Given** 未登録のベンダー名, **When** `registry.get("unknown")` を実行, **Then** `AdapterNotFoundError` が発生する
+4. **Given** 未登録のベンダー名, **When** `registry.get("unknown")` を実行, **Then** `None` が返される
 5. **Given** 複数のアダプターが登録済み, **When** `registry.list()` を実行, **Then** 登録済みベンダー名のリストが返される
 
 ---
@@ -130,7 +131,7 @@ Python 開発者が型ヒント（Type Hints）を活用して IDE の補完やm
 
 ### Functional Requirements
 
-*親仕様 001-marketsymbol の FR-001〜FR-026 を Python で実装。以下は Python 固有の実装要件。*
+*親仕様 001-marketsymbol の FR-001〜FR-024 を Python で実装。以下は Python 固有の実装要件。*
 
 #### パッケージ構成
 
