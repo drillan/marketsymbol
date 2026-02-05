@@ -40,7 +40,7 @@ addopts = [
     "--strict-config",
 ]
 filterwarnings = [
-    "error",
+    "error",  # 警告をエラーとして扱い、早期に問題を検出
 ]
 
 # mypy configuration (strict mode)
@@ -60,6 +60,7 @@ strict_equality = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"
+# pytest.fixture デコレータは型アノテーションを持たないため緩和
 disallow_untyped_decorators = false
 
 # ruff configuration
@@ -79,7 +80,7 @@ select = [
     "UP",     # pyupgrade
     "ARG",    # flake8-unused-arguments
     "SIM",    # flake8-simplify
-    "TCH",    # flake8-type-checking
+    "TC",     # flake8-type-checking
     "PTH",    # flake8-use-pathlib
     "RUF",    # Ruff-specific rules
 ]
