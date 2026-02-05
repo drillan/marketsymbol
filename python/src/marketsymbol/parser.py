@@ -5,6 +5,7 @@
 
 import unicodedata
 
+from marketsymbol.constants import MAX_SYMBOL_LENGTH
 from marketsymbol.enums import OptionType
 from marketsymbol.errors import ErrorCode, SymbolParseError, SymbolValidationError
 from marketsymbol.symbol import EquitySymbol, FutureSymbol, OptionSymbol, Symbol
@@ -37,11 +38,8 @@ def normalize_symbol(raw: str) -> str:
     Returns:
         正規化後のシンボル文字列.
     """
-    # NFKC 正規化: 全角→半角、合字の分解など
     normalized = unicodedata.normalize("NFKC", raw)
-    # 大文字変換
     normalized = normalized.upper()
-    # 前後空白除去
     normalized = normalized.strip()
     return normalized
 
@@ -72,6 +70,13 @@ def parse_symbol(raw: str) -> Symbol:
     """
     if not isinstance(raw, str):
         raise TypeError(f"Expected str, got {type(raw).__name__}")
+
+    if len(raw) > MAX_SYMBOL_LENGTH:
+        raise SymbolParseError.from_parse_failure(
+            f"Symbol too long: {len(raw)} characters (max {MAX_SYMBOL_LENGTH})",
+            ErrorCode.SYMBOL_TOO_LONG,
+            raw,
+        )
 
     normalized = normalize_symbol(raw)
 
@@ -146,7 +151,7 @@ def _parse_future_or_series(
         )
 
 
-def _parse_option(segments: list[str], raw: str) -> OptionSymbol | FutureSymbol:
+def _parse_option(segments: list[str], raw: str) -> OptionSymbol:
     """5セグメントを OptionSymbol としてパースする."""
     exchange, code, expiry, type_indicator, strike_str = segments
 
@@ -161,7 +166,7 @@ def _parse_option(segments: list[str], raw: str) -> OptionSymbol | FutureSymbol:
     except ValueError:
         raise SymbolParseError.from_parse_failure(
             f"Invalid strike: '{strike_str}' (must be a positive integer)",
-            ErrorCode.INVALID_SEGMENT_COUNT,
+            ErrorCode.INVALID_STRIKE_VALUE,
             raw,
         ) from None
 

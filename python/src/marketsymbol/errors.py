@@ -35,6 +35,15 @@ class ErrorCode(Enum):
     UNKNOWN_EXCHANGE = "E007"
     """不明な取引所コード."""
 
+    INVALID_CODE = "E008"
+    """無効な証券/商品コード."""
+
+    INVALID_STRIKE_VALUE = "E009"
+    """無効な権利行使価格."""
+
+    SYMBOL_TOO_LONG = "E010"
+    """シンボル文字列が長すぎる."""
+
 
 class SymbolError(Exception):
     """シンボル関連例外の基底クラス.

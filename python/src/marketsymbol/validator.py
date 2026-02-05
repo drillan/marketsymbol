@@ -48,19 +48,19 @@ def validate_code(code: str) -> None:
         code: 証券/商品コード.
 
     Raises:
-        SymbolValidationError: バリデーション失敗時 (E004).
+        SymbolValidationError: バリデーション失敗時 (E008).
     """
     if not code or len(code) < MIN_CODE_LENGTH or len(code) > MAX_CODE_LENGTH:
         raise SymbolValidationError(
             f"Invalid code: '{code}' (must be {MIN_CODE_LENGTH}-{MAX_CODE_LENGTH} characters)",
-            ErrorCode.INVALID_SEGMENT_COUNT,
+            ErrorCode.INVALID_CODE,
             field_name="code",
             field_value=code,
         )
     if not _CODE_PATTERN.match(code):
         raise SymbolValidationError(
             f"Invalid code: '{code}' (must be uppercase alphanumeric)",
-            ErrorCode.INVALID_SEGMENT_COUNT,
+            ErrorCode.INVALID_CODE,
             field_name="code",
             field_value=code,
         )
@@ -131,12 +131,12 @@ def validate_strike(strike: int) -> None:
         strike: 権利行使価格.
 
     Raises:
-        SymbolValidationError: バリデーション失敗時 (E002).
+        SymbolValidationError: バリデーション失敗時 (E009).
     """
     if strike < MIN_STRIKE:
         raise SymbolValidationError(
             f"Invalid strike: {strike} (must be positive integer >= {MIN_STRIKE})",
-            ErrorCode.OPTION_WITHOUT_STRIKE,
+            ErrorCode.INVALID_STRIKE_VALUE,
             field_name="strike",
             field_value=strike,
         )

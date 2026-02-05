@@ -87,29 +87,29 @@ class TestValidateCode:
         validate_code("ABCDEFGHIJ")
 
     def test_invalid_code_empty(self) -> None:
-        """空のコードは E004 エラーを発生する."""
+        """空のコードは E008 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_code("")
-        assert exc_info.value.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert exc_info.value.error_code == ErrorCode.INVALID_CODE
         assert exc_info.value.field_name == "code"
 
     def test_invalid_code_too_long(self) -> None:
-        """11文字のコードは E004 エラーを発生する."""
+        """11文字のコードは E008 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_code("ABCDEFGHIJK")
-        assert exc_info.value.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert exc_info.value.error_code == ErrorCode.INVALID_CODE
 
     def test_invalid_code_lowercase(self) -> None:
-        """小文字のコードは E004 エラーを発生する."""
+        """小文字のコードは E008 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_code("nk")
-        assert exc_info.value.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert exc_info.value.error_code == ErrorCode.INVALID_CODE
 
     def test_invalid_code_with_special_char(self) -> None:
-        """特殊文字を含むコードは E004 エラーを発生する."""
+        """特殊文字を含むコードは E008 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_code("NK-225")
-        assert exc_info.value.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert exc_info.value.error_code == ErrorCode.INVALID_CODE
 
 
 class TestValidateExpiry:
@@ -232,14 +232,14 @@ class TestValidateStrike:
         validate_strike(1000000)
 
     def test_invalid_strike_zero(self) -> None:
-        """0 は E002 エラーを発生する."""
+        """0 は E009 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_strike(0)
-        assert exc_info.value.error_code == ErrorCode.OPTION_WITHOUT_STRIKE
+        assert exc_info.value.error_code == ErrorCode.INVALID_STRIKE_VALUE
         assert exc_info.value.field_name == "strike"
 
     def test_invalid_strike_negative(self) -> None:
-        """負の値は E002 エラーを発生する."""
+        """負の値は E009 エラーを発生する."""
         with pytest.raises(SymbolValidationError) as exc_info:
             validate_strike(-100)
-        assert exc_info.value.error_code == ErrorCode.OPTION_WITHOUT_STRIKE
+        assert exc_info.value.error_code == ErrorCode.INVALID_STRIKE_VALUE

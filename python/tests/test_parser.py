@@ -239,22 +239,22 @@ class TestParseSymbolErrors:
         assert exc_info.value.error_code == ErrorCode.INVALID_OPTION_TYPE
 
     def test_parse_invalid_strike_not_numeric(self) -> None:
-        """数値でない strike は E004 エラーを発生する."""
+        """数値でない strike は E009 エラーを発生する."""
         with pytest.raises(SymbolParseError) as exc_info:
             parse_symbol("XJPX:NK:20250314:C:ABC")
-        assert exc_info.value.error_code == ErrorCode.INVALID_SEGMENT_COUNT
+        assert exc_info.value.error_code == ErrorCode.INVALID_STRIKE_VALUE
 
     def test_parse_invalid_strike_zero(self) -> None:
-        """strike が 0 は E002 エラーを発生する."""
+        """strike が 0 は E009 エラーを発生する."""
         with pytest.raises(SymbolParseError) as exc_info:
             parse_symbol("XJPX:NK:20250314:C:0")
-        assert exc_info.value.error_code == ErrorCode.OPTION_WITHOUT_STRIKE
+        assert exc_info.value.error_code == ErrorCode.INVALID_STRIKE_VALUE
 
     def test_parse_invalid_strike_negative(self) -> None:
-        """負の strike は E002 エラーを発生する."""
+        """負の strike は E009 エラーを発生する."""
         with pytest.raises(SymbolParseError) as exc_info:
             parse_symbol("XJPX:NK:20250314:C:-100")
-        assert exc_info.value.error_code == ErrorCode.OPTION_WITHOUT_STRIKE
+        assert exc_info.value.error_code == ErrorCode.INVALID_STRIKE_VALUE
 
     def test_parse_too_many_segments(self) -> None:
         """セグメントが多すぎると E004 エラーを発生する."""
@@ -324,3 +324,32 @@ class TestParseSymbolEdgeCases:
         )
         parsed = parse_symbol(str(original))
         assert parsed == original
+
+    def test_str_roundtrip_option_put(self) -> None:
+        """OptionSymbol (PUT) の str() → parse_symbol() が等価."""
+        original = OptionSymbol(
+            exchange="XJPX",
+            code="NK",
+            expiry="20250314",
+            option_type=OptionType.PUT,
+            strike=38000,
+        )
+        parsed = parse_symbol(str(original))
+        assert parsed == original
+
+    def test_parse_symbol_too_long(self) -> None:
+        """シンボルが MAX_SYMBOL_LENGTH を超えると E010 エラーを発生する."""
+        long_symbol = "XJPX:" + "A" * 100
+        with pytest.raises(SymbolParseError) as exc_info:
+            parse_symbol(long_symbol)
+        assert exc_info.value.error_code == ErrorCode.SYMBOL_TOO_LONG
+
+    def test_parse_symbol_at_max_length(self) -> None:
+        """MAX_SYMBOL_LENGTH ちょうどのシンボルはパースできる."""
+        # MAX_SYMBOL_LENGTH = 100
+        # "XJPX:" (5文字) + 95文字 = 100文字
+        long_code = "A" * 10  # 最大コード長は10文字
+        symbol = f"XJPX:{long_code}"
+        result = parse_symbol(symbol)
+        assert isinstance(result, EquitySymbol)
+        assert result.code == long_code
